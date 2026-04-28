@@ -377,7 +377,56 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ---
 
 ## Phase 6 — 성능 최적화, 배포, MVP 출시
-> 인프라 구성 완료 — 배포 파이프라인 착수 예정
+
+### TASK-060 | 프로덕션 인프라 최종 구성
+- **세부 작업:**
+  - [x] ECS Fargate 클러스터 CDK 스택 (`compute.stack.ts`)
+    - [x] ECR 저장소 (API + AI 엔진)
+    - [x] ALB + Fargate 서비스 (CPU/요청 수 기반 Auto Scaling, 최대 50 태스크)
+    - [x] Auto Scaling — CPU 70% 초과 시 스케일 아웃, 태스크당 1,000 RPS
+    - [x] AI 엔진 내부 전용 서비스 (외부 노출 없음)
+    - [x] Secrets Manager 시크릿 자동 주입
+  - [x] CloudFront + S3 CDK 스택 (`cdn.stack.ts`)
+    - [x] Web 앱 S3 버킷 (CloudFront OAC 전용 접근)
+    - [x] 정적 자산 버킷 (해지 가이드 스크린샷)
+    - [x] CloudFront 배포 — Web/API/Assets 행동 분리
+    - [x] SPA 라우팅 지원 (404 → index.html)
+  - [ ] 실제 AWS 계정 `cdk deploy --all` 실행
+
+### TASK-061 | 배포 파이프라인 구축
+- **세부 작업:**
+  - [x] `.github/workflows/deploy.yml` — 프로덕션 배포 워크플로우
+    - [x] CI 검증 (lint + typecheck) → Docker 빌드 → ECR 푸시
+    - [x] DB 마이그레이션 자동화 (`prisma migrate deploy`)
+    - [x] ECS Rolling Update 배포
+    - [x] Web 앱 S3 업로드 + CloudFront 캐시 무효화
+    - [x] 배포 후 헬스 체크 + Slack 알림
+  - [x] `Dockerfile.prod` — 멀티 스테이지 빌드 (non-root 사용자)
+  - [x] `.github/ecs/api-task-definition.json` — ECS 태스크 정의 템플릿
+  - [ ] Rollback 절차 실제 검증 (인프라 연결 후)
+
+### TASK-062 | 앱 스토어 배포 준비
+- **세부 작업:**
+  - [x] `app.config.ts` — iOS/Android 앱 메타 설정 (iOS 15.0+, Android 10.0+)
+  - [x] 앱 스토어 설명문 (`store-metadata/ko/`) — 단문/장문 설명
+  - [x] 개인정보처리방침 (`store-metadata/privacy-policy.md`) — 개인정보보호법 준수
+  - [ ] 앱 아이콘, 스플래시, 스크린샷 제작
+  - [ ] Apple App Store 심사 제출
+  - [ ] Google Play Store 심사 제출
+
+### TASK-063 | MVP 출시 후 모니터링 체계 수립
+- **세부 작업:**
+  - [x] KPI 모니터링 CDK 스택 (`kpi-monitor.stack.ts`)
+    - [x] MAU, 카드 연동률, D-3 CTR, 해지 안내 완료율 SingleValue 위젯
+    - [x] API P95 / AI 탐지 정확도 추이 그래프
+    - [x] AI 탐지 정확도 90% 미만 알람
+    - [x] ECS 태스크 수 / RDS 연결 / Redis 히트율 인프라 건강도
+  - [x] 장애 대응 Runbook (`docs/runbook.md`)
+    - [x] 장애 등급 정의 (P0~P3)
+    - [x] 초동 대응 CLI 명령어 모음
+    - [x] 롤백 절차
+    - [x] KPI 모니터링 쿼리
+  - [ ] 사용자 피드백 채널 설정 (App Store 리뷰, 인앱 피드백)
 
 ---
 
@@ -391,8 +440,8 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 | FR-004 | 원클릭 해지 안내 | TASK-024, 045 | TC-031~TC-040 | MVP | ✅ API+화면 완료 |
 | FR-005 | 카드사 연동 | TASK-020, 042 | TC-041~TC-050 | MVP | ✅ 백엔드+화면 완료 |
 | FR-006 | 지출 리포트 | TASK-025, 047 | TC-051~TC-060 | v1.1 | ✅ API+Web화면 완료 |
-| NFR-PERF | 성능 요구사항 | TASK-052, 060 | 부하 테스트 | MVP | [ ] 미착수 |
-| NFR-SEC | 보안 요구사항 | TASK-011, 014, 051 | 보안 점검 | MVP | 🔄 구현 준수, 점검 미실시 |
+| NFR-PERF | 성능 요구사항 | TASK-052, 060 | k6 부하 테스트 | MVP | 🔄 스크립트 완성, 실행 대기 |
+| NFR-SEC | 보안 요구사항 | TASK-011, 014, 051 | 보안 점검 | MVP | ✅ OWASP 자동 점검 완료 |
 
 ---
 
@@ -411,15 +460,24 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 
 ---
 
-## 🚀 다음 착수 작업
+## 🏁 MVP 출시 최종 체크리스트
 
 ```
-1. [Phase 6] TASK-060 프로덕션 인프라 최종 구성 (EC2 Auto Scaling, CloudFront CDN)
-2. [Phase 6] TASK-061 배포 파이프라인 (Blue/Green, Prisma migrate deploy 자동화)
-3. [Phase 6] TASK-062 앱 스토어 배포 준비 (iOS App Store / Google Play)
-4. [Phase 6] TASK-063 MVP 출시 후 모니터링 (MAU, 카드 연동률, D-3 CTR 대시보드)
-5. [Phase 5] TASK-052 실제 k6 부하 테스트 실행 (인프라 구성 후)
-6. [Phase 0] TASK-004 AWS 계정 연결 후 cdk deploy 실행
+[AWS 계정 연결 후]
+□ cdk deploy --all               # 전체 인프라 프로비저닝
+□ prisma migrate deploy          # DB 스키마 적용
+□ pnpm db:seed                   # 30종 구독 카탈로그 시딩
+□ k6 run load-test.k6.js         # P95 1.5초 / 10,000명 부하 테스트
+
+[앱 스토어]
+□ 앱 아이콘 / 스플래시 / 스크린샷 제작
+□ Apple App Store 심사 제출 (iOS 15.0+)
+□ Google Play Store 심사 제출 (Android 10.0+)
+
+[출시 후]
+□ CloudWatch KPI 대시보드 확인
+□ Runbook docs/runbook.md 팀 공유
+□ 사용자 피드백 채널 설정
 ```
 
 ---

@@ -1,0 +1,45 @@
+{
+  "family": "subtrack-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "PLACEHOLDER",
+      "portMappings": [
+        { "containerPort": 3000, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "NODE_ENV",    "value": "production" },
+        { "name": "PORT",        "value": "3000" },
+        { "name": "API_VERSION", "value": "v1" }
+      ],
+      "secrets": [
+        { "name": "JWT_ACCESS_SECRET",  "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/jwt/access-secret"     },
+        { "name": "JWT_REFRESH_SECRET", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/jwt/refresh-secret"    },
+        { "name": "ENCRYPTION_KEY",     "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/crypto/encryption-key"  },
+        { "name": "DATABASE_URL",       "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/rds/credentials"        },
+        { "name": "REDIS_URL",          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/redis/url"              },
+        { "name": "AI_ENGINE_INTERNAL_SECRET", "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:ACCOUNT_ID:secret:subtrack/ai-engine/internal-key" }
+      ],
+      "healthCheck": {
+        "command":     ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"],
+        "interval":    15,
+        "timeout":     5,
+        "retries":     3,
+        "startPeriod": 30
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group":         "/subtrack/api",
+          "awslogs-region":        "ap-northeast-2",
+          "awslogs-stream-prefix": "api"
+        }
+      },
+      "essential": true
+    }
+  ]
+}
