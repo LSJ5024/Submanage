@@ -1,0 +1,93 @@
+.page { max-width: 1100px; margin: 0 auto; }
+
+.pageTitle { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
+
+/* 상단 요약 행 */
+.summaryRow  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+.totalCard   { display: flex; flex-direction: column; gap: 6px; }
+.cardLabel   { font-size: 13px; font-weight: 600; color: var(--color-text-sub); }
+.totalAmount { font-size: 32px; font-weight: 800; color: var(--color-primary); }
+.cardSub     { font-size: 12px; color: var(--color-text-sub); }
+
+.upcomingCard {}
+.upcomingList { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.upcomingItem { display: flex; align-items: center; gap: 10px; }
+.dBadge {
+  min-width: 40px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #EEF0FE;
+  color: var(--color-primary);
+}
+.dBadge.urgent { background: #FEF2F2; color: var(--color-danger); }
+.upcomingName   { flex: 1; font-size: 14px; }
+.upcomingAmount { font-size: 14px; font-weight: 600; }
+.emptyText { font-size: 13px; color: var(--color-text-sub); }
+
+/* 메인 행 */
+.mainRow { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+
+.chartCard {}
+.emptyChart {
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-text-sub);
+  font-size: 14px;
+}
+
+/* 구독 리스트 */
+.subListWrap {}
+.subListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sortGroup { display: flex; gap: 4px; }
+.sortBtn {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-sub);
+  transition: all 0.15s;
+}
+.sortBtn:hover  { background: var(--color-bg); }
+.sortActive     { background: var(--color-primary) !important; color: #fff !important; border-color: var(--color-primary) !important; }
+
+.loadingText { color: var(--color-text-sub); font-size: 14px; text-align: center; padding: 24px; }
+
+.emptyCard   { text-align: center; padding: 32px; }
+.emptyIcon   { font-size: 36px; margin-bottom: 8px; }
+.emptyTitle  { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.emptyDesc   { font-size: 13px; color: var(--color-text-sub); margin-bottom: 16px; }
+
+.subList  { display: flex; flex-direction: column; gap: 8px; }
+.subItem  { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+.subInfo  { display: flex; flex-direction: column; gap: 3px; }
+.subName  { font-size: 15px; font-weight: 600; }
+.subMeta  { font-size: 12px; color: var(--color-text-sub); }
+.subRight { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.subAmount { font-size: 15px; font-weight: 700; }
+
+.statusBadge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.active     { background: #DCFCE7; color: #16A34A; }
+.detected   { background: #EEF0FE; color: var(--color-primary); }
+.paused     { background: #FEF3C7; color: #D97706; }
+.cancelling { background: #FEE2E2; color: #DC2626; }
+.cancelled  { background: #F3F4F6; color: #6B7280; }

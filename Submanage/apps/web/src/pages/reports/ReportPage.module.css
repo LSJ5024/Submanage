@@ -1,0 +1,27 @@
+.page    { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.loading { padding: 40px; text-align: center; color: var(--color-text-sub); }
+
+.monthNav { display: flex; align-items: center; justify-content: center; gap: 20px; }
+.monthLabel { font-size: 20px; font-weight: 700; min-width: 140px; text-align: center; }
+
+.summaryRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.summaryCard {}
+.summaryLabel  { font-size: 13px; color: var(--color-text-sub); margin-bottom: 6px; }
+.summaryAmount { font-size: 28px; font-weight: 800; color: var(--color-primary); }
+
+.chartRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.chartCard {}
+.chartTitle { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-sub); }
+.emptyChart { height: 200px; display: grid; place-items: center; color: var(--color-text-sub); font-size: 14px; }
+
+.table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.table th { font-size: 12px; font-weight: 600; color: var(--color-text-sub); text-align: left; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+.table td { padding: 10px 0; font-size: 14px; border-bottom: 1px solid var(--color-border); }
+.amountCell { font-weight: 600; text-align: right; }
+
+.badge { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.active     { background: #DCFCE7; color: #16A34A; }
+.detected   { background: #EEF0FE; color: var(--color-primary); }
+.paused     { background: #FEF3C7; color: #D97706; }
+.cancelling { background: #FEE2E2; color: #DC2626; }
+.cancelled  { background: #F3F4F6; color: #6B7280; }

@@ -11,7 +11,9 @@
       "Bash(DATABASE_URL=\"postgresql://subtrack:pass@localhost:5432/subtrack_dev\" npx prisma generate)",
       "Bash(git remote *)",
       "Bash(git config *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

@@ -290,8 +290,8 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 - **세부 작업:**
   - [x] `POST /internal/detect` — 결제 내역 수신 후 탐지 결과 반환 (`app/routers/detect.py`)
   - [x] 탐지 결과 응답 스키마 정의 (`app/schemas.py` — 서비스명, 금액, 결제 주기, 카테고리, 신뢰도)
-  - [ ] 처리 성능 검증: 1,000건 기준 **30초 이내** (부하 테스트 미실시)
-  - [ ] 통합 테스트 작성 (`test_detect_api.py`) — 추후 작성
+  - [x] 처리 성능 검증: 1,000건 기준 **30초 이내** — 통합 테스트에서 자동 측정
+  - [x] 통합 테스트 작성 (`tests/test_detect_api.py` — 9개 케이스, 1,000건 성능 포함)
 
 ---
 
@@ -301,14 +301,48 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ### TASK-040 | 프론트엔드 공통 기반 세팅
 - **담당:** 프론트엔드
 - **세부 작업:**
-  - [x] React Native 프로젝트 초기화 (`apps/mobile/` — package.json, tsconfig.json)
-  - [x] React.js 웹 프로젝트 초기화 (`apps/web/` — package.json, tsconfig.json, Vite 설정)
+  - [x] React Native 프로젝트 초기화 (`apps/mobile/` — package.json, tsconfig.json, App.tsx, 네비게이션)
+  - [x] React.js 웹 프로젝트 초기화 (`apps/web/` — Vite, index.html, main.tsx, 라우터)
   - [x] `@subtrack/shared` 패키지 연결 — 공용 타입 재사용
-  - [x] API 클라이언트 모듈 구현 (`apps/web/src/lib/apiClient.ts` — Axios + JWT 자동 첨부 + 토큰 갱신)
-  - [ ] 공용 디자인 토큰 및 컴포넌트 라이브러리 초기 세팅 — 추후 구현
+  - [x] API 클라이언트 모듈 구현 (Web: Axios + JWT 자동 첨부 + 토큰 갱신 / Mobile: 에뮬레이터 지원)
+  - [x] Zustand 상태 관리 스토어 (`auth.store`, `subscription.store`)
+  - [x] 공용 UI 컴포넌트 (`Button`, `Input`, `Card`) + CSS Modules
 
-### TASK-041~047 | 화면 구현
-- **세부 작업:** 모두 `[ ]` 미착수 — Phase 4 본격 착수 시 진행
+### TASK-041 | 인증 화면 구현
+- **세부 작업:**
+  - [x] Web — LoginPage, RegisterPage (유효성 검증, 에러 표시)
+  - [x] React Native — LoginScreen, RegisterScreen
+
+### TASK-042 | 카드 연동 화면 구현 (FR-005)
+- **세부 작업:**
+  - [x] Web — CardLinkPage (3단계: 카드사 선택 → 인증 → 완료)
+  - [x] React Native — CardLinkScreen (7대 카드사 선택 + 인가 코드 입력)
+
+### TASK-043 | 홈 / 대시보드 화면 구현 (FR-002)
+- **세부 작업:**
+  - [x] Web — DashboardPage (총액 카드, 임박 결제 D-배지, 카테고리 도넛 차트, 구독 리스트 + 정렬)
+  - [x] React Native — DashboardScreen (총액 카드, 임박 결제, 구독 리스트, 당겨서 새로 고침)
+
+### TASK-044 | 구독 상세 화면 구현
+- **세부 작업:**
+  - [x] Web — SubscriptionDetailPage (상태 머신 버튼, 해지 안내 진입)
+  - [x] React Native — SubscriptionDetailScreen
+
+### TASK-045 | 해지 안내 화면 구현 (FR-004)
+- **세부 작업:**
+  - [x] Web — CancelGuidePage (단계별 안내, 딥링크 버튼)
+  - [x] React Native — CancelGuideScreen
+  - [x] **⚠️ 제약:** 자동 해지 버튼 구현 금지 — 딥링크(Linking.openURL) 안내만 제공 (준수)
+
+### TASK-046 | 알림 설정 화면 구현 (FR-003)
+- **세부 작업:**
+  - [x] Web — NotificationSettingsPage (채널별 토글, 알림 시간 설정)
+  - [x] React Native — NotificationSettingsScreen
+
+### TASK-047 | 지출 리포트 화면 구현 (FR-006)
+- **세부 작업:**
+  - [x] Web — ReportPage (월 네비게이션, 바 차트, 파이 차트, 상세 테이블)
+  - [ ] React Native — 추후 구현 예정
 
 ---
 
@@ -326,12 +360,12 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 
 | 요구사항 ID | 기능명 | 구현 TASK | 테스트 케이스 | 출시 버전 | 상태 |
 |------------|--------|-----------|-------------|---------|------|
-| FR-001 | 구독 자동 탐지 | TASK-021, 031, 032, 033 | TC-001~TC-010 | MVP | ✅ 백엔드 완료 |
-| FR-002 | 구독 대시보드 | TASK-025, 043, 044 | TC-011~TC-020 | MVP | ✅ API 완료 |
-| FR-003 | D-3 알림 | TASK-023, 046 | TC-021~TC-030 | MVP | ✅ 백엔드 완료 |
-| FR-004 | 원클릭 해지 안내 | TASK-024, 045 | TC-031~TC-040 | MVP | ✅ API 완료 |
-| FR-005 | 카드사 연동 | TASK-020, 042 | TC-041~TC-050 | MVP | ✅ 백엔드 완료 |
-| FR-006 | 지출 리포트 | TASK-025, 047 | TC-051~TC-060 | v1.1 | ✅ API 완료 |
+| FR-001 | 구독 자동 탐지 | TASK-021, 031, 032, 033 | TC-001~TC-010 | MVP | ✅ 백엔드+AI 완료 |
+| FR-002 | 구독 대시보드 | TASK-025, 043, 044 | TC-011~TC-020 | MVP | ✅ API+화면 완료 |
+| FR-003 | D-3 알림 | TASK-023, 046 | TC-021~TC-030 | MVP | ✅ 백엔드+화면 완료 |
+| FR-004 | 원클릭 해지 안내 | TASK-024, 045 | TC-031~TC-040 | MVP | ✅ API+화면 완료 |
+| FR-005 | 카드사 연동 | TASK-020, 042 | TC-041~TC-050 | MVP | ✅ 백엔드+화면 완료 |
+| FR-006 | 지출 리포트 | TASK-025, 047 | TC-051~TC-060 | v1.1 | ✅ API+Web화면 완료 |
 | NFR-PERF | 성능 요구사항 | TASK-052, 060 | 부하 테스트 | MVP | [ ] 미착수 |
 | NFR-SEC | 보안 요구사항 | TASK-011, 014, 051 | 보안 점검 | MVP | 🔄 구현 준수, 점검 미실시 |
 
@@ -355,11 +389,12 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ## 🚀 다음 착수 작업
 
 ```
-1. [Phase 4] TASK-041 인증 화면 구현 (React Native / Web)
-2. [Phase 4] TASK-042 카드 연동 화면 (마이데이터 OAuth 웹뷰)
-3. [Phase 4] TASK-043 홈 / 대시보드 화면
-4. [Phase 3] TASK-033 AI 탐지 통합 테스트 + 성능 검증 (1,000건/30초)
-5. [Phase 0] TASK-004 AWS 인프라 프로비저닝 (DB 마이그레이션 실행 포함)
+1. [Phase 5] TASK-050 E2E 테스트 — 카드 연동 → 구독 탐지 → 대시보드 전체 플로우
+2. [Phase 5] TASK-051 보안 취약점 점검 (OWASP Top 10, 민감 데이터 로그 감사)
+3. [Phase 5] TASK-052 성능 테스트 (k6/Artillery — P95 1.5초, 동시접속 10,000명)
+4. [Phase 0] TASK-004 AWS 인프라 프로비저닝 (VPC, RDS, Redis, Secrets Manager)
+5. [Phase 4] TASK-047 React Native 지출 리포트 화면
+6. [Phase 6] TASK-060 프로덕션 배포 파이프라인 구축
 ```
 
 ---

@@ -1,0 +1,46 @@
+.page    { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.loading { padding: 40px; text-align: center; color: var(--color-text-sub); }
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-sub);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mainCard {}
+.topRow   { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+
+.serviceName { font-size: 22px; font-weight: 700; }
+.category    { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
+
+.statusBadge { padding: 4px 12px; border-radius: 99px; font-size: 13px; font-weight: 600; }
+.active     { background: #DCFCE7; color: #16A34A; }
+.detected   { background: #EEF0FE; color: var(--color-primary); }
+.paused     { background: #FEF3C7; color: #D97706; }
+.cancelling { background: #FEE2E2; color: #DC2626; }
+.cancelled  { background: #F3F4F6; color: #6B7280; }
+
+.infoGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.infoItem {}
+.infoLabel { font-size: 12px; color: var(--color-text-sub); margin-bottom: 4px; }
+.infoValue { font-size: 16px; font-weight: 600; }
+
+.actions  { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.guideCard { display: flex; align-items: center; justify-content: space-between; }
+.guideInfo {}
+.guideTitle { font-size: 15px; font-weight: 600; }
+.guideDesc  { font-size: 13px; color: var(--color-text-sub); margin-top: 4px; }
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  align-self: center;
+}
