@@ -1,0 +1,82 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: subtrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: subtrack_dev
+      POSTGRES_USER: subtrack
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-subtrack_dev_password}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U subtrack -d subtrack_dev']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: subtrack-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-subtrack_redis_dev}
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile.dev
+    container_name: subtrack-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://subtrack:${POSTGRES_PASSWORD:-subtrack_dev_password}@postgres:5432/subtrack_dev
+      REDIS_URL: redis://:${REDIS_PASSWORD:-subtrack_redis_dev}@redis:6379
+    env_file:
+      - .env
+    volumes:
+      - ./services/api:/app
+      - /app/node_modules
+    command: pnpm dev
+
+  ai-engine:
+    build:
+      context: ./services/ai-engine
+      dockerfile: Dockerfile
+    container_name: subtrack-ai-engine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '8000:8000'
+    environment:
+      DATABASE_URL: postgresql://subtrack:${POSTGRES_PASSWORD:-subtrack_dev_password}@postgres:5432/subtrack_dev
+    env_file:
+      - .env
+    volumes:
+      - ./services/ai-engine:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+  redis_data:

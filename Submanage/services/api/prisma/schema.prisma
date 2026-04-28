@@ -1,0 +1,232 @@
+// CLAUDE.md §6 DB 규칙 준수:
+// - UUID PK, snake_case 테이블명, created_at/updated_at 자동 관리
+// - 민감 데이터(User, Subscription) 소프트 삭제 (deleted_at)
+// - transactions 금융 데이터 AES-256 암호화 후 저장
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── 사용자 ────────────────────────────────────────────────────
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  password     String   // bcrypt 해시 저장
+  name         String
+  phone_number String?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime? // 소프트 삭제
+
+  cards                 Card[]
+  subscriptions         Subscription[]
+  notifications         Notification[]
+  notification_setting  NotificationSetting?
+
+  @@map("users")
+}
+
+// ── 카드 (국내 7대 카드사만 지원, CLAUDE.md §8) ─────────────────
+model Card {
+  id               String      @id @default(uuid()) @db.Uuid
+  user_id          String      @db.Uuid
+  card_company     CardCompany
+  last_four_digits String      @db.Char(4)
+  is_active        Boolean     @default(true)
+  linked_at        DateTime    @default(now())
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user         User          @relation(fields: [user_id], references: [id])
+  transactions Transaction[]
+
+  @@map("cards")
+}
+
+// ── 결제 내역 (금융 데이터 AES-256 암호화 필수, CLAUDE.md §7) ───────
+model Transaction {
+  id                      String   @id @default(uuid()) @db.Uuid
+  user_id                 String   @db.Uuid
+  card_id                 String   @db.Uuid
+  // AES-256 암호화 저장 필드
+  merchant_name_encrypted String   // 가맹점명 암호화
+  amount_encrypted        String   // 금액 암호화
+  currency                String   @default("KRW") @db.Char(3)
+  transaction_date        DateTime
+  // 중복 방지용 외부 식별자 (카드사 제공 거래 ID)
+  external_id             String?  // 마이데이터 API 원본 거래 ID
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  card Card @relation(fields: [card_id], references: [id])
+
+  // 동일 카드의 동일 날짜·동일 금액 중복 저장 방지
+  @@unique([card_id, transaction_date, amount_encrypted])
+  @@map("transactions")
+}
+
+// ── 구독 서비스 마스터 DB ─────────────────────────────────────────
+model SubscriptionCatalog {
+  id           String              @id @default(uuid()) @db.Uuid
+  service_name String              @unique
+  category     SubscriptionCategory
+  logo_url     String?
+  website_url  String?
+  merchant_name_patterns String[]  // 가맹점명 정규화 패턴
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  subscriptions Subscription[]
+  cancellation_guide CancellationGuide?
+
+  @@map("subscription_catalog")
+}
+
+// ── 사용자 구독 (PRD §4.2) ────────────────────────────────────────
+model Subscription {
+  id             String              @id @default(uuid()) @db.Uuid
+  user_id        String              @db.Uuid
+  catalog_id     String?             @db.Uuid
+  service_name   String              // 카탈로그 미등록 시 직접 입력
+  category       SubscriptionCategory
+  amount         Decimal             @db.Decimal(10, 2)
+  currency       String              @default("KRW") @db.Char(3)
+  billing_cycle  BillingCycle
+  next_billing_date DateTime
+  status         SubscriptionStatus  @default(DETECTED)
+  auto_detected  Boolean             @default(false)
+
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime? // 소프트 삭제
+
+  user          User                 @relation(fields: [user_id], references: [id])
+  catalog       SubscriptionCatalog? @relation(fields: [catalog_id], references: [id])
+  notifications Notification[]
+  status_histories SubscriptionStatusHistory[]
+
+  @@map("subscriptions")
+}
+
+// ── 구독 상태 이력 (audit trail, TASK-022) ──────────────────────────
+model SubscriptionStatusHistory {
+  id              String             @id @default(uuid()) @db.Uuid
+  subscription_id String             @db.Uuid
+  from_status     SubscriptionStatus
+  to_status       SubscriptionStatus
+  changed_at      DateTime           @default(now())
+  changed_by      String?            // userId 또는 'SYSTEM'
+
+  subscription Subscription @relation(fields: [subscription_id], references: [id])
+
+  @@map("subscription_status_histories")
+}
+
+// ── 알림 이력 ─────────────────────────────────────────────────────
+model Notification {
+  id              String              @id @default(uuid()) @db.Uuid
+  user_id         String              @db.Uuid
+  subscription_id String              @db.Uuid
+  channel         NotificationChannel
+  title           String
+  body            String
+  sent_at         DateTime?
+  failed_at       DateTime?
+  retry_count     Int                 @default(0)
+
+  created_at DateTime @default(now())
+
+  user         User         @relation(fields: [user_id], references: [id])
+  subscription Subscription @relation(fields: [subscription_id], references: [id])
+
+  @@map("notifications")
+}
+
+// ── 알림 수신 설정 (opt-out, TASK-023) ──────────────────────────────
+model NotificationSetting {
+  id               String  @id @default(uuid()) @db.Uuid
+  user_id          String  @unique @db.Uuid
+  push_enabled     Boolean @default(true)
+  email_enabled    Boolean @default(true)
+  sms_enabled      Boolean @default(false)
+  notification_time String @default("10:00") // HH:mm 형식
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("notification_settings")
+}
+
+// ── 해지 가이드 (안내만 제공, 자동 해지 절대 금지, CLAUDE.md §8) ──────
+model CancellationGuide {
+  id           String @id @default(uuid()) @db.Uuid
+  catalog_id   String @unique @db.Uuid
+  steps        Json   // CancellationStep[] JSON
+  deep_link    String?
+  screenshot_urls String[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  catalog SubscriptionCatalog @relation(fields: [catalog_id], references: [id])
+
+  @@map("cancellation_guides")
+}
+
+// ── ENUM 타입 ─────────────────────────────────────────────────────
+enum SubscriptionStatus {
+  DETECTED
+  ACTIVE
+  PAUSED
+  CANCELLING
+  CANCELLED
+}
+
+enum BillingCycle {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+  ANNUAL
+}
+
+enum SubscriptionCategory {
+  VIDEO
+  MUSIC
+  SOFTWARE
+  CLOUD
+  GAME
+  NEWS
+  SHOPPING
+  FITNESS
+  EDUCATION
+  OTHER
+}
+
+enum NotificationChannel {
+  PUSH
+  EMAIL
+  SMS
+}
+
+// 국내 7대 카드사 (CLAUDE.md §8 — 해외 카드사 연동 금지)
+enum CardCompany {
+  SHINHAN
+  KB
+  HYUNDAI
+  SAMSUNG
+  LOTTE
+  WOORI
+  HANA
+}

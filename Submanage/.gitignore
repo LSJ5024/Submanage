@@ -1,0 +1,52 @@
+# 의존성
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 빌드 산출물
+dist/
+build/
+*.js.map
+*.d.ts.map
+
+# 환경 변수 (절대 커밋 금지)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# 로그
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/migrations/dev.db
+
+# Python
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# AWS
+.aws/
+cdk.out/
+*.tfstate
+*.tfstate.backup
+.terraform/

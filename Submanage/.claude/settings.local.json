@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --version)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm approve-builds *)",
+      "Bash(npx prisma *)",
+      "Bash(DATABASE_URL=\"postgresql://subtrack:pass@localhost:5432/subtrack_dev\" npx prisma validate)",
+      "Bash(DATABASE_URL=\"postgresql://subtrack:pass@localhost:5432/subtrack_dev\" npx prisma generate)",
+      "Bash(git remote *)",
+      "Bash(git config *)",
+      "Bash(git add *)"
+    ]
+  }
+}
