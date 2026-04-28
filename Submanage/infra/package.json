@@ -1,0 +1,21 @@
+{
+  "name": "@subtrack/infra",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build":  "tsc",
+    "cdk":    "cdk",
+    "deploy": "cdk deploy --all --require-approval never",
+    "diff":   "cdk diff",
+    "synth":  "cdk synth"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.140.0",
+    "constructs":  "^10.3.0"
+  },
+  "devDependencies": {
+    "aws-cdk":   "^2.140.0",
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.12"
+  }
+}

@@ -64,12 +64,14 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 - **담당:** 인프라
 - **참조:** PRD §2.2 아키텍처, CLAUDE.md §7 보안
 - **세부 작업:**
-  - [ ] AWS CDK 또는 Terraform으로 IaC 코드 작성 (`infra/` 디렉토리)
-  - [ ] VPC, 서브넷, 보안 그룹 구성
-  - [ ] RDS (PostgreSQL), ElastiCache (Redis) 프로비저닝
-  - [ ] S3 버킷 생성 (정적 자산, 해지 가이드 스크린샷용)
-  - [ ] AWS Secrets Manager 설정 — API 키, 인증서 관리 구조 정의
-  - [ ] CloudWatch 로그 그룹 및 알람 초기 설정
+  - [x] AWS CDK IaC 코드 작성 (`infra/src/` — 5개 스택)
+  - [x] VPC, 서브넷(Public/Private/Isolated), NAT, 보안 그룹 구성 (`network.stack.ts`)
+  - [x] RDS PostgreSQL 16 Multi-AZ + 읽기 복제본 + 7일 백업 (`database.stack.ts`)
+  - [x] ElastiCache Redis 7 Multi-AZ + 저장/전송 암호화 (`cache.stack.ts`)
+  - [x] AWS Secrets Manager — 9개 시크릿 구조 정의 (`secrets.stack.ts`)
+  - [x] CloudWatch 로그 그룹, P95 알람, 운영 대시보드 (`monitor.stack.ts`)
+  - [ ] S3 버킷 (정적 자산, 해지 가이드 스크린샷용) — 추후 추가
+  - [ ] 실제 AWS 계정 `cdk deploy` 실행 — 계정 연결 후 진행
 
 ---
 
@@ -347,12 +349,35 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ---
 
 ## Phase 5 — 통합 테스트 및 보안 점검
-> 모두 `[ ]` 미착수
+
+### TASK-050 | E2E 테스트 구현
+- **세부 작업:**
+  - [x] `subscription-flow.e2e.test.ts` — 회원가입/로그인 → 카드 연동 → 구독 CRUD → 상태 머신 → 해지 안내 → 대시보드 전체 플로우 (7개 그룹, 20+ 케이스)
+  - [x] `cancel-notify-flow.e2e.test.ts` — 구독 탐지 → D-3 알림 발송 → opt-out 반영 플로우 (4개 케이스)
+  - [x] 보안 E2E: JWT 만료/위조/none 알고리즘 검증
+
+### TASK-051 | 보안 취약점 점검
+- **세부 작업:**
+  - [x] `security-checklist.test.ts` — OWASP Top 10 자동 점검
+    - [x] A01 접근 제어 실패: 미인증 접근 401, IDOR 차단 403, Admin API 403
+    - [x] A02 암호화 실패: AES-256 복호화 검증, bcrypt salt 12 확인, 응답 비밀번호 노출 차단
+    - [x] A03 인젝션: SQL Injection 패턴 Zod 차단, XSS JSON 응답 확인
+    - [x] A07 인증 실패: Bearer 필수, none 알고리즘 차단
+    - [x] CLAUDE.md §8 절대 금지: 자동 해지/결제 대행 엔드포인트 부재 확인
+
+### TASK-052 | 성능 테스트
+- **세부 작업:**
+  - [x] `load-test.k6.js` — k6 부하 테스트 스크립트
+    - [x] Ramp-up 시나리오: 0 → 10,000 VU 점진적 증가
+    - [x] Spike 시나리오: 급격한 트래픽 증가 테스트
+    - [x] 임계값: 대시보드 P95 2초, 구독목록 P95 1.5초, 에러율 1% 미만
+    - [x] `handleSummary` 자동 보고서 생성 (performance-report.json)
+  - [ ] 실제 부하 테스트 실행 (인프라 구성 후)
 
 ---
 
 ## Phase 6 — 성능 최적화, 배포, MVP 출시
-> 모두 `[ ]` 미착수
+> 인프라 구성 완료 — 배포 파이프라인 착수 예정
 
 ---
 
@@ -389,12 +414,12 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ## 🚀 다음 착수 작업
 
 ```
-1. [Phase 5] TASK-050 E2E 테스트 — 카드 연동 → 구독 탐지 → 대시보드 전체 플로우
-2. [Phase 5] TASK-051 보안 취약점 점검 (OWASP Top 10, 민감 데이터 로그 감사)
-3. [Phase 5] TASK-052 성능 테스트 (k6/Artillery — P95 1.5초, 동시접속 10,000명)
-4. [Phase 0] TASK-004 AWS 인프라 프로비저닝 (VPC, RDS, Redis, Secrets Manager)
-5. [Phase 4] TASK-047 React Native 지출 리포트 화면
-6. [Phase 6] TASK-060 프로덕션 배포 파이프라인 구축
+1. [Phase 6] TASK-060 프로덕션 인프라 최종 구성 (EC2 Auto Scaling, CloudFront CDN)
+2. [Phase 6] TASK-061 배포 파이프라인 (Blue/Green, Prisma migrate deploy 자동화)
+3. [Phase 6] TASK-062 앱 스토어 배포 준비 (iOS App Store / Google Play)
+4. [Phase 6] TASK-063 MVP 출시 후 모니터링 (MAU, 카드 연동률, D-3 CTR 대시보드)
+5. [Phase 5] TASK-052 실제 k6 부하 테스트 실행 (인프라 구성 후)
+6. [Phase 0] TASK-004 AWS 계정 연결 후 cdk deploy 실행
 ```
 
 ---
