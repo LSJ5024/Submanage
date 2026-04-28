@@ -92,7 +92,11 @@ def _detect_cycle(
 
 def _median_amount(txs: list[Any]) -> float:
     """결제 금액 중앙값 반환 (환율 변동 고려)."""
-    amounts = sorted(float(tx.amount_encrypted) for tx in txs if tx.amount_encrypted.replace('.', '').isdigit())
+    amounts = sorted(
+        float(tx.amount_encrypted)
+        for tx in txs
+        if tx.amount_encrypted.replace(".", "").isdigit()
+    )
     if not amounts:
         return 0.0
     mid = len(amounts) // 2

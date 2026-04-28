@@ -14,7 +14,21 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(grep -r \"autoCancel\\\\|auto_cancel\\\\|executeCancel\\\\|execute_cancel\\\\|cancelSubscription\\\\|cancelExecution\" --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.py\" -l)",
+      "Bash(grep -r \"executePayment\\\\|processPayment\\\\|chargeCard\\\\|direct.*pay\" --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.py\" -l)",
+      "Bash(grep -r \"VISA_USA\\\\|MASTER\\\\|AMEX\\\\|DISCOVER\\\\|overseas\" --include=\"*.ts\" -l)",
+      "Bash(grep -rn \"prisma\\\\.\" services/api/src/controllers/)",
+      "Bash(grep -rn \"Repository\\\\|repository\" services/api/src/routes/)",
+      "Bash(grep -n \"ai.engine\\\\|aiEngine\\\\|8000\" services/api/src/app.ts)",
+      "Bash(grep -rn '\\\\$queryRaw\\\\|\\\\$executeRaw' services/api/src/ '--include=*.ts')",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|py|prisma|yml|yaml|json|js|css\\)$\")",
+      "Bash(awk 'length > 100 {print FILENAME \":\" NR \": \" length \"자\"}' services/ai-engine/app/**/*.py)",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -n \".\\\\{101,\\\\}\" D:/mypy/Submanage/services/ai-engine/app/services/pattern_analyzer.py)",
+      "Bash(ls services/api/node_modules/supertest)",
+      "Bash(ls services/api/node_modules/@types/supertest)",
+      "Bash(grep \"^\\\\.env$\" .gitignore)"
     ]
   }
 }
