@@ -12,7 +12,8 @@ import { subscriptionRouter } from './routes/subscription.routes.js';
 import { cardRouter } from './routes/card.routes.js';
 import { notificationRouter } from './routes/notification.routes.js';
 import { dashboardRouter } from './routes/dashboard.routes.js';
-import { adminRouter } from './routes/admin.routes.js';
+import { adminRouter }    from './routes/admin.routes.js';
+import { internalRouter } from './routes/internal.routes.js';
 
 const app = express();
 
@@ -47,7 +48,9 @@ app.use(`${API_PREFIX}/subscriptions`, subscriptionRouter);
 app.use(`${API_PREFIX}/cards`, cardRouter);
 app.use(`${API_PREFIX}/notifications`, notificationRouter);
 app.use(`${API_PREFIX}/dashboard`, dashboardRouter);
-app.use(`${API_PREFIX}/admin`, adminRouter);
+app.use(`${API_PREFIX}/admin`,    adminRouter);
+// 내부 전용 (Lambda 스케줄러 호출, X-Scheduler-Key 인증)
+app.use('/internal', internalRouter);
 
 // ── 헬스 체크 ─────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

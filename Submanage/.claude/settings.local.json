@@ -28,7 +28,15 @@
       "Bash(grep -n \".\\\\{101,\\\\}\" D:/mypy/Submanage/services/ai-engine/app/services/pattern_analyzer.py)",
       "Bash(ls services/api/node_modules/supertest)",
       "Bash(ls services/api/node_modules/@types/supertest)",
-      "Bash(grep \"^\\\\.env$\" .gitignore)"
+      "Bash(grep \"^\\\\.env$\" .gitignore)",
+      "Bash(grep -E \"\\\\$\\\\{\\\\{ secrets\\\\.\" .github/workflows/deploy.yml)",
+      "Bash(git commit *)",
+      "Bash(pnpm --filter @subtrack/api add @aws-sdk/client-ses)",
+      "Bash(pnpm add *)",
+      "Bash(sed -i 's/- \\\\[x\\\\] AWS SES \\(이메일\\) 발송 모듈 \\(stub — SDK 연동 필요\\)/- [x] AWS SES \\(이메일\\) 발송 모듈 \\(@aws-sdk\\\\/client-ses 실제 구현 + HTML 템플릿\\)/' TASK.md)",
+      "Bash(sed -i 's/- \\\\[ \\\\] 단위 테스트 작성 \\(`dashboard.service.test.ts`\\) — 추후 작성 예정/- [x] 단위 테스트 작성 \\(`dashboard.service.test.ts` — 11개 케이스\\)/' TASK.md)",
+      "Bash(sed -i 's/- \\\\[ \\\\] SQLAlchemy 설정 \\(PostgreSQL 연결\\) — 추후 구현/- [x] SQLAlchemy 설정 \\(database.py, models.py, repositories\\\\/catalog_repository.py\\)/' TASK.md)",
+      "Bash(sed -i 's/- \\\\[ \\\\] React Native — 추후 구현 예정/- [x] React Native — ReportScreen \\(월 네비게이션, 바 차트, 구독 목록, 바텀 탭 네비게이션 추가\\)/' TASK.md)"
     ]
   }
 }

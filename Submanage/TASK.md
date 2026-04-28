@@ -164,7 +164,7 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
     - [x] `GET /api/v1/cards` — 연동된 카드 목록 조회
     - [x] `DELETE /api/v1/cards/:id` — 카드 연동 해제 (소프트 삭제)
   - [x] 최초 연동 시 12개월치 결제 내역 비동기 동기화 트리거
-  - [ ] Lambda Scheduler 설정 — 매일 자정 증분 동기화 (인프라 구성 후)
+  - [x] Lambda Scheduler 설정 — scheduler.stack.ts + /internal 라우터 구현 (cdk deploy 후 활성화)
   - [x] **⚠️ 제약:** 해외 카드사 연동 구현 금지 (v1 Out-of-Scope) — 화이트리스트로 차단
 
 ### TASK-021 | 결제 내역 처리 및 AI 엔진 연동 (FR-001)
@@ -211,7 +211,7 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
   - [x] `NotificationDispatcher` 구현 (`src/services/notification/notification.dispatcher.ts`)
     - [x] FCM (Android 푸시) 발송 모듈
     - [x] APNs (iOS 푸시) — FCM 통합 예정
-    - [x] AWS SES (이메일) 발송 모듈 (stub — SDK 연동 필요)
+    - [x] AWS SES (이메일) 발송 모듈 (@aws-sdk/client-ses 실제 구현 + HTML 템플릿)
     - [x] Twilio (SMS) 발송 모듈
     - [x] 발송 실패 시 Exponential Backoff 재시도 (최대 3회)
     - [x] 알림 발송 이력 `notifications` 테이블 저장
@@ -247,7 +247,7 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
   - [x] `GET /api/v1/dashboard/reports/monthly` — 월별 지출 리포트 API
     - [x] 월별 총 지출, 카테고리별 분포, 구독 목록
   - [x] 정렬 파라미터 지원: `?sort=billing_date|amount|category`
-  - [ ] 단위 테스트 작성 (`dashboard.service.test.ts`) — 추후 작성 예정
+  - [x] 단위 테스트 작성 (`dashboard.service.test.ts` — 11개 케이스)
 
 ---
 
@@ -259,7 +259,7 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 - **참조:** CLAUDE.md §4 AI 엔진 분리 원칙, §5 Python 컨벤션
 - **세부 작업:**
   - [x] `services/ai-engine/` FastAPI 프로젝트 초기화
-  - [ ] SQLAlchemy 설정 (PostgreSQL 연결) — 추후 구현
+  - [x] SQLAlchemy 설정 (database.py, models.py, repositories/catalog_repository.py)
   - [x] Black + Flake8 설정 (`pyproject.toml`)
   - [x] Docker 이미지 빌드 설정 (`Dockerfile`)
   - [x] 내부 전용 엔드포인트 인증 (`X-Internal-Secret` 헤더 검증)
@@ -344,7 +344,7 @@ Phase 6 (M6)            : 성능 최적화, 배포, MVP 출시                  
 ### TASK-047 | 지출 리포트 화면 구현 (FR-006)
 - **세부 작업:**
   - [x] Web — ReportPage (월 네비게이션, 바 차트, 파이 차트, 상세 테이블)
-  - [ ] React Native — 추후 구현 예정
+  - [x] React Native — ReportScreen (월 네비게이션, 바 차트, 구독 목록, 바텀 탭 네비게이션 추가)
 
 ---
 

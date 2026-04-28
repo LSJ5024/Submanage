@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import detect
 from app.config import settings
+from app.database import check_connection
 
 app = FastAPI(
     title="SubTrack AI Engine",
@@ -40,5 +41,9 @@ app.include_router(
 
 @app.get("/health")
 async def health() -> dict:
-    """헬스 체크 엔드포인트."""
-    return {"status": "ok"}
+    """헬스 체크 엔드포인트 (DB 연결 상태 포함)."""
+    db_ok = check_connection()
+    return {
+        "status":    "ok" if db_ok else "degraded",
+        "database":  "connected" if db_ok else "disconnected",
+    }
