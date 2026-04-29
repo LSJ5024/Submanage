@@ -8,7 +8,6 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/shared/package.json  ./packages/shared/
 COPY services/api/package.json     ./services/api/
 
-# --shamefully-hoist: axios 등 패키지를 flat node_modules에 배치 (Docker 환경 호환)
 RUN pnpm install --frozen-lockfile --shamefully-hoist
 
 COPY tsconfig.base.json  ./
@@ -26,9 +25,12 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-COPY --from=builder --chown=subtrack:nodejs /app/node_modules         ./node_modules
-COPY --from=builder --chown=subtrack:nodejs /app/services/api/dist    ./dist
-COPY --from=builder --chown=subtrack:nodejs /app/services/api/prisma  ./prisma
+COPY --from=builder --chown=subtrack:nodejs /app/node_modules              ./node_modules
+COPY --from=builder --chown=subtrack:nodejs /app/services/api/dist         ./dist
+COPY --from=builder --chown=subtrack:nodejs /app/services/api/prisma       ./prisma
+# @subtrack/shared 심볼릭 링크 대상 복사 (node_modules/@subtrack/shared → packages/shared)
+COPY --from=builder --chown=subtrack:nodejs /app/packages/shared/dist      ./packages/shared/dist
+COPY --from=builder --chown=subtrack:nodejs /app/packages/shared/package.json ./packages/shared/package.json
 
 USER subtrack
 
