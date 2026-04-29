@@ -3,10 +3,12 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
       "@subtrack/shared": ["../../packages/shared/src/index.ts"]
     }
   },
-  "include": ["src", "prisma"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "prisma"]
 }
