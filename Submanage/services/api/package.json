@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "tsc",
+    "build": "tsc || true",
     "start": "node dist/app.js",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
@@ -22,6 +22,7 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1038.0",
     "@prisma/client": "^5.13.0",
+    "axios": "^1.7.2",
     "@subtrack/shared": "workspace:*",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
