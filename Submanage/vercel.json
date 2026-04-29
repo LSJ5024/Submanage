@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm --filter @subtrack/shared build && pnpm --filter @subtrack/web build",
+  "outputDirectory": "apps/web/dist",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

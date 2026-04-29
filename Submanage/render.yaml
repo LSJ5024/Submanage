@@ -1,0 +1,69 @@
+services:
+  # ── API 서버 (Node.js) ──────────────────────────────────────────────────
+  - type: web
+    name: subtrack-api
+    runtime: docker
+    dockerfilePath: ./services/api/Dockerfile.railway
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: subtrack-db
+          property: connectionString
+      - key: REDIS_URL
+        sync: false   # Upstash에서 직접 입력
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false   # 직접 입력 (32바이트 hex)
+      - key: AI_ENGINE_URL
+        fromService:
+          name: subtrack-ai-engine
+          type: web
+          property: host
+      - key: AI_ENGINE_INTERNAL_SECRET
+        generateValue: true
+      - key: RESEND_API_KEY
+        sync: false   # Resend 콘솔에서 발급
+      - key: RESEND_FROM_EMAIL
+        value: "SubTrack <onboarding@resend.dev>"
+      - key: SCHEDULER_SECRET
+        generateValue: true
+
+  # ── AI 탐지 엔진 (Python FastAPI) ─────────────────────────────────────
+  - type: web
+    name: subtrack-ai-engine
+    runtime: docker
+    dockerfilePath: ./services/ai-engine/Dockerfile
+    dockerContext: ./services/ai-engine
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_ENV
+        value: production
+      - key: PORT
+        value: "8000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: subtrack-db
+          property: connectionString
+      - key: INTERNAL_API_SECRET
+        fromService:
+          name: subtrack-api
+          type: web
+          envVarKey: AI_ENGINE_INTERNAL_SECRET
+
+databases:
+  # ── PostgreSQL (Render 무료 — 90일 후 만료, Neon 사용 권장) ──────────
+  - name: subtrack-db
+    plan: free
+    databaseName: subtrack
+    user: subtrack

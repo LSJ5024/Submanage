@@ -1,0 +1,18 @@
+[build]
+builder          = "DOCKERFILE"
+dockerfilePath   = "Dockerfile.railway"
+
+[deploy]
+startCommand     = "node dist/app.js"
+healthcheckPath  = "/health"
+healthcheckTimeout = 30
+restartPolicyType  = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[deploy.envVars]]
+name  = "NODE_ENV"
+value = "production"
+
+[[deploy.envVars]]
+name  = "PORT"
+value = "3000"
