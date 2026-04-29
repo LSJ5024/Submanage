@@ -8,8 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // 앱 실행 — pooler 연결
+  directUrl = env("DIRECT_URL")     // 마이그레이션 — direct 연결 (Neon 필수)
 }
 
 // ── 사용자 ────────────────────────────────────────────────────
