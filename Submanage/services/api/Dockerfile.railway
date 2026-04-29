@@ -1,4 +1,4 @@
-# Railway 배포용 — 모노레포 루트에서 빌드
+# Railway/Render 배포용 — 모노레포 루트에서 빌드
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -12,15 +12,15 @@ COPY services/api/package.json     ./services/api/
 
 RUN pnpm install --frozen-lockfile
 
-# 소스 빌드
-COPY packages/shared/ ./packages/shared/
-COPY services/api/    ./services/api/
+# tsconfig.base.json 포함해서 소스 복사
+COPY tsconfig.base.json  ./
+COPY packages/shared/    ./packages/shared/
+COPY services/api/       ./services/api/
 
 RUN pnpm --filter @subtrack/shared build
 RUN pnpm --filter @subtrack/api    build
 RUN pnpm --filter @subtrack/api    db:generate
 
-# ── 프로덕션 이미지 ──────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 
 RUN addgroup --system --gid 1001 nodejs && \
