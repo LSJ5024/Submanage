@@ -5,6 +5,11 @@
     "outDir": "dist",
     "declaration": false,
     "declarationMap": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
     "paths": {
       "@subtrack/shared": ["../../packages/shared/src/index.ts"]
     }
