@@ -9,6 +9,7 @@
     "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "noEmitOnError": false,
     "skipLibCheck": true,
     "paths": {
       "@subtrack/shared": ["../../packages/shared/src/index.ts"]

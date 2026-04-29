@@ -1,18 +1,16 @@
-# Railway/Render 배포용 — 모노레포 루트에서 빌드
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 RUN npm install -g pnpm
 
-# 의존성 설치
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/shared/package.json  ./packages/shared/
 COPY services/api/package.json     ./services/api/
 
-RUN pnpm install --frozen-lockfile
+# --shamefully-hoist: axios 등 패키지를 flat node_modules에 배치 (Docker 환경 호환)
+RUN pnpm install --frozen-lockfile --shamefully-hoist
 
-# tsconfig.base.json 포함해서 소스 복사
 COPY tsconfig.base.json  ./
 COPY packages/shared/    ./packages/shared/
 COPY services/api/       ./services/api/
