@@ -21,7 +21,25 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') ?? ['http://localhost:3001'],
+    origin: (origin, callback) => {
+      // origin이 없으면 (curl, Postman 등) 허용
+      if (!origin) return callback(null, true);
+      const allowed = (process.env.ALLOWED_ORIGINS ?? '')
+        .split(',')
+        .map((o) => o.trim())
+        .filter(Boolean);
+      // 개발 환경이거나 허용 목록에 있으면 허용
+      if (
+        process.env.NODE_ENV !== 'production' ||
+        allowed.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: ${origin} is not allowed`));
+      }
+    },
     credentials: true,
   }),
 );
