@@ -5,6 +5,7 @@
   "description": "SubTrack — 구독 통합 관리 플랫폼 모노레포",
   "scripts": {
     "build": "pnpm -r build",
+    "vercel-build": "pnpm --filter @subtrack/shared build && pnpm --filter @subtrack/web build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "dev:api": "pnpm --filter @subtrack/api dev",
